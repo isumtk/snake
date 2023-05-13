@@ -4,32 +4,31 @@ import {
 	ResetIcon,
 	RocketIcon,
 } from '@radix-ui/react-icons';
-import { useCallback, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { GLOBAL_STORE } from '../../redux/store.types';
+import { GAME_PLAY_STATE } from '../../utils/utils.types';
+import { gameState } from '../../redux/actions';
 
 const Navbar = () => {
-	const [isPlaying, setIsPlaying] = useState<boolean>(false);
-	const [canReset, setCanReset] = useState<boolean>(false);
+	const gamePlayState = useSelector((state: GLOBAL_STORE) => state.gameState);
 	const highScore = useSelector((state: GLOBAL_STORE) => state.highscrore);
+	const dispatch = useDispatch();
 
 	const toggleGameState = useCallback(() => {
-		if (canReset) {
-			if (isPlaying) {
-				setIsPlaying(false);
-			} else {
-				setIsPlaying(true);
-			}
-		} else {
-			setIsPlaying(true);
-			setCanReset(true);
+		if (
+			gamePlayState === GAME_PLAY_STATE.STOP ||
+			gamePlayState === GAME_PLAY_STATE.PAUSED
+		) {
+			dispatch(gameState(GAME_PLAY_STATE.PLAYING));
+		} else if (gamePlayState === GAME_PLAY_STATE.PLAYING) {
+			dispatch(gameState(GAME_PLAY_STATE.PAUSED));
 		}
-	}, [setIsPlaying, setCanReset, canReset, isPlaying]);
+	}, [dispatch, gamePlayState]);
 
 	const resetGame = useCallback(() => {
-		setIsPlaying(false);
-		setCanReset(false);
-	}, [setCanReset, setIsPlaying]);
+		location.reload();
+	}, [location]);
 	return (
 		<div className="w-full py-1">
 			<nav className="flex h-16 w-full items-center">
@@ -48,7 +47,8 @@ const Navbar = () => {
 						<button
 							onClick={toggleGameState}
 							className="unset menu_button bg-inherit-500 flex aspect-square h-9 items-center justify-center gap-1 rounded">
-							{!isPlaying ? (
+							{gamePlayState === GAME_PLAY_STATE.PAUSED ||
+							gamePlayState === GAME_PLAY_STATE.STOP ? (
 								<PlayIcon className="h-6 w-6" />
 							) : (
 								<PauseIcon className="h-6 w-6" />
@@ -57,7 +57,7 @@ const Navbar = () => {
 						<button
 							onClick={resetGame}
 							className={`${
-								!canReset ? 'invisible' : ''
+								gamePlayState === GAME_PLAY_STATE.STOP ? 'invisible' : ''
 							}  unset menu_button flex aspect-square h-9 items-center justify-center gap-1 rounded bg-inherit transition-all`}>
 							<ResetIcon className="h-6 w-6" />
 						</button>

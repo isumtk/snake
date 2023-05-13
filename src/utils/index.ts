@@ -1,11 +1,11 @@
-import { COORDINATE, GAME_BLOCK_SIZE } from './utils.types';
+import { COORDINATE, DIRECTION, GAME_BLOCK_SIZE } from './utils.types';
 
 export function randomNumberGenerator(maxRange: number) {
 	let random = Math.random() * maxRange;
 	return random - (random % GAME_BLOCK_SIZE);
 }
 
-export function randomPositionGenerator(width: number, height: number) {
+export function spawnFood(width: number, height: number) {
 	return { x: randomNumberGenerator(width), y: randomNumberGenerator(height) };
 }
 
@@ -16,6 +16,18 @@ export function clearCanvas(
 ) {
 	if (context) {
 		context.clearRect(0, 0, width, height);
+	}
+}
+
+export function whereNewBody(a: COORDINATE, b: COORDINATE) {
+	if (a.y - b.y < 0) {
+		return DIRECTION.UP;
+	} else if (a.x - b.x < 0) {
+		return DIRECTION.LEFT;
+	} else if (a.x - b.x > 0) {
+		return DIRECTION.RIGHT;
+	} else if (a.y - b.y > 0) {
+		return DIRECTION.DOWN;
 	}
 }
 

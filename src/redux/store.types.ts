@@ -1,13 +1,19 @@
-import { COORDINATE, DIRECTIONS, GAME } from '../utils/utils.types';
+import {
+	COORDINATE,
+	DIRECTION,
+	GAME,
+	GAME_PLAY_STATE,
+} from '../utils/utils.types';
 
 export interface GLOBAL_STORE {
 	snake: COORDINATE[] | [];
-	bannedDirection: DIRECTIONS | null;
+	gameState: GAME_PLAY_STATE;
+	bannedDirection: DIRECTION;
 	score: number;
 	highscrore: number;
 }
 
 export interface ACTION {
-	type: DIRECTIONS | GAME;
+	type: DIRECTION | GAME | GAME_PLAY_STATE;
 	payload?: any;
 }
